@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>INTERNAL X CHEATS Guide</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'deep-black': '#050505',
+                        'glass-white': 'rgba(255, 255, 255, 0.05)',
+                        'glass-border': 'rgba(255, 255, 255, 0.1)',
+                        nord0: '#2e3440',
+                        nord1: '#3b4252',
+                        nord2: '#434c5e',
+                        nord3: '#4c566a',
+                        nord4: '#d8dee9',
+                        nord5: '#e5e9f0',
+                        nord6: '#eceff4',
+                        nord7: '#8fbcbb',
+                        nord8: '#88c0d0',
+                        nord9: '#81a1c1',
+                        nord10: '#5e81ac',
+                        nord11: '#bf616a',
+                        nord12: '#d08770',
+                        nord13: '#ebcb8b',
+                        nord14: '#a3be8c',
+                        nord15: '#b48ead',
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="bg-deep-black text-nord4 font-sans leading-normal tracking-normal min-h-screen flex flex-col selection:bg-nord8/30">
+    <nav class="bg-black/40 backdrop-blur-xl p-4 shadow-2xl sticky top-0 z-50 border-b border-white/5">
+        <div class="container mx-auto flex flex-wrap items-center justify-between">
+            <a href="/" class="flex items-center no-underline hover:no-underline font-black text-3xl text-white tracking-tighter uppercase group">
+                INTERNAL <span class="text-nord8 ml-1 group-hover:text-white transition-colors">X CHEATS</span>
+            </a>
+            <div class="flex items-center space-x-8 text-sm md:text-base font-bold uppercase tracking-widest">
+                <a href="/" class="text-nord4 hover:text-white transition-all duration-300">Home</a>
+                <a href="/guide" class="text-nord4 hover:text-white transition-all duration-300">Guide</a>
+                <a href="/methods" class="text-nord4 hover:text-white transition-all duration-300">Methods</a>
+                <a href="/download" class="text-nord8 hover:text-white transition-all duration-300 border-b-2 border-nord8/20">Download App</a>
+                <% if (user) { %>
+                    <div class="flex items-center space-x-4 bg-white/5 backdrop-blur-md py-2 px-5 rounded-full border border-white/10">
+                        <span class="w-2 h-2 bg-nord14 rounded-full animate-pulse"></span>
+                        <span class="text-white lowercase font-medium"><%= user.username %></span>
+                        <a href="/auth/logout" class="text-nord11 hover:text-white transition-colors ml-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                        </a>
+                    </div>
+                <% } else { %>
+                    <a href="/auth/discord" class="bg-white/10 hover:bg-white/20 text-white px-8 py-2.5 rounded-full transition-all duration-300 backdrop-blur-md border border-white/10 hover:border-white/30 shadow-lg tracking-widest">LOGIN</a>
+                <% } %>
+            </div>
+        </div>
+    </nav>
+    <main class="flex-grow">
