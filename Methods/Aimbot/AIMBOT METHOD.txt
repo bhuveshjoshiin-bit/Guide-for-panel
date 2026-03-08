@@ -1,0 +1,73 @@
+(IN CLASS)
+
+
+        private static INTERNAL AYUSH = new INTERNAL();
+        string AimbotScan = "FF FF 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 FF FF FF FF FF FF FF FF 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? 00 00 00 00 00 00 00 00 00 00 00 00 A5 43";
+        string headoffset = "0xA9";
+        string chestoffset = "0xA5";
+        private Dictionary<long, int> OrginalValues1 = new Dictionary<long, int>();
+        private Dictionary<long, int> OrginalValues2 = new Dictionary<long, int>();
+        private Dictionary<long, int> OrginalValues3 = new Dictionary<long, int>();
+        private Dictionary<long, int> OrginalValues4 = new Dictionary<long, int>();
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------
+(IN BUTTON) 
+
+           Stopwatch sw = Stopwatch.StartNew();
+            OrginalValues1.Clear();
+            OrginalValues2.Clear();
+            OrginalValues3.Clear();
+            OrginalValues4.Clear();
+            if (Process.GetProcessesByName("HD-Player").Length == 0)
+            {
+                //Type Here Emulator not found Status
+                Sta.Text = "EMULATOR NOT FOUND...";
+            }
+            else
+            {
+                Sta.Text = "Applying...";
+                Int64 readoffset = Convert.ToInt64(headoffset, 16);
+                Int64 writeoffset = Convert.ToInt64(chestoffset, 16);
+                Int32 proc = Process.GetProcessesByName("HD-Player")[0].Id;
+                AYUSH.OpenProcess(proc);
+                var result = await AYUSH.AoBScan2(AimbotScan, true, true);
+                int foundCount = result.Count();
+                if (foundCount != 0)
+                {
+                    foreach (var CurrentAddress in result)
+                    {
+                        Int64 addressToSave = CurrentAddress + writeoffset;
+                        var currentBytes = AYUSH.readMemory(addressToSave.ToString("X"), sizeof(int));
+                        int currentValue = BitConverter.ToInt32(currentBytes, 0); OrginalValues1[addressToSave] = currentValue;
+                        Int64 addressToSave9 = CurrentAddress + readoffset;
+                        var currentBytes9 = AYUSH.readMemory(addressToSave9.ToString("X"), sizeof(int));
+                        int currentValue9 = BitConverter.ToInt32(currentBytes9, 0); OrginalValues2[addressToSave9] = currentValue9;
+                        Int64 headbytes = CurrentAddress + readoffset;
+                        Int64 chestbytes = CurrentAddress + writeoffset;
+                        var bytes = AYUSH.readMemory(headbytes.ToString("X"), sizeof(int));
+                        int Read = BitConverter.ToInt32(bytes, 0);
+                        var bytes2 = AYUSH.readMemory(chestbytes.ToString("X"), sizeof(int));
+                        int Read2 = BitConverter.ToInt32(bytes2, 0);
+                        AYUSH.WriteMemory(chestbytes.ToString("X"), "int", Read.ToString());
+                        AYUSH.WriteMemory(headbytes.ToString("X"), "int", Read2.ToString());
+                        Int64 addressToSave1 = CurrentAddress + writeoffset;
+                        var currentBytes1 = AYUSH.readMemory(addressToSave9.ToString("X"), sizeof(int));
+                        int currentValue1 = BitConverter.ToInt32(currentBytes1, 0); OrginalValues3[addressToSave1] = currentValue1;
+                        Int64 addressToSave19 = CurrentAddress + readoffset;
+                        var currentBytes19 = AYUSH.readMemory(addressToSave19.ToString("X"), sizeof(int));
+                        int currentValue19 = BitConverter.ToInt32(currentBytes19, 0); OrginalValues4[addressToSave19] = currentValue19;
+                    }
+
+                    sw.Stop();
+                    double elapsedSec = sw.Elapsed.TotalSeconds;
+                    Sta.Text = $"Aimbot Activated ({foundCount} found, {elapsedSec:F2} sec)";
+                    Console.Beep(2000, 400);
+                }
+                else
+                {
+                    sw.Stop();
+                    double elapsedSec = sw.Elapsed.TotalSeconds;
+                    Sta.Text = $"Aimbot Failed ({foundCount} found, {elapsedSec:F2} sec)";
+                    Console.Beep(1000, 400);
+                }
+            }
