@@ -1,0 +1,24 @@
+public void ExecuteCommand(string command)
+{
+    ProcessStartInfo psi = new ProcessStartInfo("cmd.exe")
+    {
+        RedirectStandardInput = true,
+        RedirectStandardOutput = true,
+        RedirectStandardError = true,
+        UseShellExecute = false,
+        CreateNoWindow = true
+    };
+
+    using (Process process = new Process { StartInfo = psi })
+    {
+        process.Start();
+
+        // Write the command to the command prompt
+        process.StandardInput.WriteLine(command);
+        process.StandardInput.Flush();
+        process.StandardInput.Close();
+
+        // Wait for the command to finish
+        process.WaitForExit();
+    }
+}
