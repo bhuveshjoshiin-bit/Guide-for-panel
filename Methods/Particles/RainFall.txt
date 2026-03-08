@@ -1,0 +1,77 @@
+
+namespace RainfallAnimation
+{
+    public partial class Form1 : Form
+    {
+        private List<RainDrop> rainDrops = new List<RainDrop>();
+        private Timer timer = new Timer(); //https://discord.gg/wQjFQ57Jfn  
+
+        public Form1()
+        {
+            InitializeComponent();
+            this.DoubleBuffered = true;   // smooth animation
+            this.BackColor = Color.Black; // dark background
+
+            // Create raindrops //https://discord.gg/wQjFQ57Jfn  
+            for (int i = 0; i < 150; i++)
+            {
+                rainDrops.Add(new RainDrop(this.ClientSize.Width));
+            }
+
+            // Setup timer
+            timer.Interval = 30; // ~33 FPS
+            timer.Tick += Timer_Tick;
+            timer.Start();
+        }
+
+        private void Timer_Tick(object sender, EventArgs e)
+        { //https://discord.gg/wQjFQ57Jfn  
+            foreach (var drop in rainDrops)
+            {
+                drop.Move(this.ClientSize.Height, this.ClientSize.Width);
+            }
+            this.Invalidate(); // redraw
+        }
+
+        protected override void OnPaint(PaintEventArgs e)
+        {
+            base.OnPaint(e);
+ //https://discord.gg/wQjFQ57Jfn  
+            // Draw raindrops
+            foreach (var drop in rainDrops)
+            {
+                e.Graphics.DrawLine(Pens.Cyan, drop.X, drop.Y, drop.X, drop.Y + drop.Length);
+            }
+        }
+    }
+
+    public class RainDrop
+    {
+        public int X { get; set; }
+        public int Y { get; set; }
+        public int Length { get; set; }
+        public int Speed { get; set; } //https://discord.gg/wQjFQ57Jfn  
+
+        private static Random rand = new Random();
+
+        public RainDrop(int formWidth)
+        {
+            X = rand.Next(0, formWidth);
+            Y = rand.Next(-100, 0); // start above form
+            Length = rand.Next(8, 20); // raindrop length
+            Speed = rand.Next(8, 15);  // fall speed
+        } //https://discord.gg/wQjFQ57Jfn  
+
+        public void Move(int formHeight, int formWidth)
+        {
+            Y += Speed;
+
+            if (Y > formHeight)
+            {
+                // Reset raindrop to top
+                Y = rand.Next(-100, 0);
+                X = rand.Next(0, formWidth);
+            } //https://discord.gg/wQjFQ57Jfn  
+        }
+    }
+

@@ -1,0 +1,139 @@
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Windows.Forms;
+
+namespace FireworksAnimation
+{
+    public partial class Form1 : Form
+    {
+        private List<Firework> fireworks = new List<Firework>();
+        private Timer timer = new Timer(); //https://discord.gg/wQjFQ57Jfn  
+        private Random rand = new Random();
+
+        public Form1()
+        {
+            InitializeComponent();
+            this.DoubleBuffered = true;
+            this.BackColor = Color.Black; //https://discord.gg/wQjFQ57Jfn  
+
+            // Create initial fireworks
+            for (int i = 0; i < 5; i++)
+            {
+                fireworks.Add(new Firework(this.ClientSize.Width, this.ClientSize.Height));
+            }
+
+            timer.Interval = 30; // ~33 FPS //https://discord.gg/wQjFQ57Jfn  
+            timer.Tick += Timer_Tick;
+            timer.Start();
+        }
+
+        private void Timer_Tick(object sender, EventArgs e)
+        {
+            foreach (var fw in fireworks)
+            {
+                fw.Update(this.ClientSize.Width, this.ClientSize.Height);
+            }
+
+            // Occasionally add new fireworks
+            if (rand.Next(0, 20) == 0) //https://discord.gg/wQjFQ57Jfn  
+            {
+                fireworks.Add(new Firework(this.ClientSize.Width, this.ClientSize.Height));
+            }
+
+            this.Invalidate();
+        }
+
+        protected override void OnPaint(PaintEventArgs e)
+        { //https://discord.gg/wQjFQ57Jfn  
+            base.OnPaint(e);
+
+            foreach (var fw in fireworks)
+            {
+                fw.Draw(e.Graphics);
+            }
+        }
+    }
+ //https://discord.gg/wQjFQ57Jfn  
+    public class Firework
+    {
+        private List<Particle> particles = new List<Particle>();
+        private static Random rand = new Random();
+        private int life = 100; // lifespan
+
+        public Firework(int formWidth, int formHeight)
+        { //https://discord.gg/wQjFQ57Jfn  
+            int centerX = rand.Next(100, formWidth - 100);
+            int centerY = rand.Next(100, formHeight - 200);
+
+            // Create particles radiating outward
+            for (int i = 0; i < 50; i++)
+            {
+                particles.Add(new Particle(centerX, centerY));
+            }
+        }
+
+        public void Update(int formWidth, int formHeight)
+        {
+            foreach (var p in particles) //https://discord.gg/wQjFQ57Jfn  
+            {
+                p.Move();
+            }
+            life--;
+        }
+
+        public void Draw(Graphics g)
+        { //https://discord.gg/wQjFQ57Jfn  
+            foreach (var p in particles)
+            {
+                int alpha = Math.Max(0, life * 2); // fade effect
+                using (Brush b = new SolidBrush(Color.FromArgb(alpha, p.Color)))
+                {
+                    g.FillEllipse(b, p.X, p.Y, p.Size, p.Size);
+                }
+            }
+        } //https://discord.gg/wQjFQ57Jfn  
+    }
+
+    public class Particle
+    {
+        public float X { get; set; }
+        public float Y { get; set; }
+        public float VX { get; set; }
+        public float VY { get; set; }
+        public int Size { get; set; } //https://discord.gg/wQjFQ57Jfn  
+        public Color Color { get; set; }
+
+        private static Random rand = new Random();
+
+        public Particle(int centerX, int centerY)
+        {
+            X = centerX;
+            Y = centerY;
+ //https://discord.gg/wQjFQ57Jfn  
+            // Random velocity in all directions
+            double angle = rand.NextDouble() * Math.PI * 2;
+            double speed = rand.NextDouble() * 6 + 2;
+            VX = (float)(Math.Cos(angle) * speed);
+            VY = (float)(Math.Sin(angle) * speed);
+ //https://discord.gg/wQjFQ57Jfn  
+            Size = rand.Next(3, 6);
+
+            // Random bright color
+            Color = Color.FromArgb(
+                rand.Next(150, 255),
+                rand.Next(150, 255), //https://discord.gg/wQjFQ57Jfn  
+                rand.Next(150, 255)
+            );
+        }
+
+        public void Move()
+        {
+            X += VX;
+            Y += VY;
+
+            // Gravity effect
+            VY += 0.1f; //https://discord.gg/wQjFQ57Jfn  
+        }
+    }
+}

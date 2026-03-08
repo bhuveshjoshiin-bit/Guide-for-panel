@@ -1,0 +1,81 @@
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Windows.Forms;
+
+namespace DotAnimation
+{
+    public partial class Form1 : Form
+    {
+        private List<Particle> particles = new List<Particle>();
+        private Timer timer = new Timer(); //https://discord.gg/wQjFQ57Jfn  
+
+        public Form1()
+        {
+            InitializeComponent();
+            this.DoubleBuffered = true;   // smooth animation
+            this.BackColor = Color.Black; // background
+
+            // Create particles
+            for (int i = 0; i < 100; i++) //https://discord.gg/wQjFQ57Jfn  
+            {
+                particles.Add(new Particle(this.ClientSize.Width, this.ClientSize.Height));
+            }
+
+            // Setup timer
+            timer.Interval = 30; // ~33 FPS
+            timer.Tick += Timer_Tick;
+            timer.Start();
+        }
+
+        private void Timer_Tick(object sender, EventArgs e)
+        {
+            foreach (var p in particles)
+            {
+                p.Move(this.ClientSize.Width, this.ClientSize.Height);
+            } //https://discord.gg/wQjFQ57Jfn  
+            this.Invalidate(); // redraw
+        }
+
+        protected override void OnPaint(PaintEventArgs e)
+        {
+            base.OnPaint(e);
+
+            // Draw particles only (dots)
+            foreach (var p in particles)
+            {
+                e.Graphics.FillEllipse(Brushes.Cyan, p.X, p.Y, p.Size, p.Size);
+            } //https://discord.gg/wQjFQ57Jfn  
+        }
+    }
+
+    public class Particle
+    {
+        public float X { get; set; }
+        public float Y { get; set; } //https://discord.gg/wQjFQ57Jfn  
+        public float VX { get; set; }
+        public float VY { get; set; }
+        public int Size { get; set; }
+
+        private static Random rand = new Random();
+
+        public Particle(int formWidth, int formHeight)
+        {
+            X = rand.Next(0, formWidth);
+            Y = rand.Next(0, formHeight);
+            VX = (float)(rand.NextDouble() * 2 - 1); // random velocity X
+            VY = (float)(rand.NextDouble() * 2 - 1); // random velocity Y
+            Size = rand.Next(3, 8);
+        } //https://discord.gg/wQjFQ57Jfn  
+
+        public void Move(int formWidth, int formHeight)
+        {
+            X += VX;
+            Y += VY;
+
+            // Bounce off edges
+            if (X < 0 || X > formWidth) VX = -VX;
+            if (Y < 0 || Y > formHeight) VY = -VY;
+        } //https://discord.gg/wQjFQ57Jfn  
+    }
+}
