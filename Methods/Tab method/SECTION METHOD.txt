@@ -1,0 +1,53 @@
+DC: https://discord.gg/cwVh4vwcuS
+JOIN DC FOR ALL FILES WITH PROJECT FILE
+CREADIT GOES TO INTERNAL X CHEAT !!
+
+
+============================================
+
+        public Form1()
+        {
+            InitializeComponent();
+            hidepanels();
+            SetPanelLoactin();
+            guna2Panel1.Visible = true;
+
+        }
+
+=====================================================
+(IN CLASS)
+
+
+private Point Panellocation = new Point();
+
+        private void hidepanels()
+        {
+            guna2Panel1.Visible = false;
+            guna2Panel2.Visible = false;
+            guna2Panel3.Visible = false;
+            guna2Panel4.Visible = false;
+
+        }
+
+        private void SetPanelLoactin()
+        {
+            guna2Panel1.Location = Panellocation;
+            guna2Panel2.Location = Panellocation;
+            guna2Panel3.Location = Panellocation;
+            guna2Panel4.Location = Panellocation;
+
+        }
+
+=======================================================
+
+(IN BUTTON FOR EVERY GUNA2PANEL)
+
+            hidepanels();
+            guna2Panel1.Visible = true;
+            guna2Panel1.BringToFront();
+
+
+
+
+
+
