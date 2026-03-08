@@ -1,0 +1,31 @@
+string processName = "HD-Player"; // Specify your target process name
+string dllResourceName = "PROJECTNAME.CHAMS MENU"; // Correct resource name
+
+// Extract the embedded msdrmi.dll to a temporary file
+string tempDllPath = Path.Combine(Path.GetTempPath(), "faisal.dll");
+ExtractEmbeddedResource(dllResourceName, tempDllPath);
+
+Console.WriteLine($"DLL extracted successfully to: {tempDllPath}");
+
+
+Process[] targetProcesses = Process.GetProcessesByName(processName);
+if (targetProcesses.Length == 0)
+{
+    Console.WriteLine($"Waiting for {processName}.exe...");
+}
+else
+{
+    Process targetProcess = targetProcesses[0];
+    IntPtr hProcess = OpenProcess(PROCESS_CREATE_THREAD | PROCESS_QUERY_INFORMATION | PROCESS_VM_OPERATION | PROCESS_VM_WRITE | PROCESS_VM_READ, false, targetProcess.Id);
+
+    IntPtr loadLibraryAddr = GetProcAddress(GetModuleHandle("kernel32.dll"), "LoadLibraryA");
+    IntPtr allocMemAddress = VirtualAllocEx(hProcess, IntPtr.Zero, (IntPtr)tempDllPath.Length, MEM_COMMIT, PAGE_READWRITE);
+
+    IntPtr bytesWritten;
+    WriteProcessMemory(hProcess, allocMemAddress, System.Text.Encoding.ASCII.GetBytes(tempDllPath), (uint)tempDllPath.Length, out bytesWritten);
+
+    CreateRemoteThread(hProcess, IntPtr.Zero, IntPtr.Zero, loadLibraryAddr, allocMemAddress, 0, IntPtr.Zero);
+
+    Console.Beep(240, 300);
+
+}
