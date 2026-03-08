@@ -1,0 +1,102 @@
+[DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+        private static extern IntPtr SetWindowsHookEx(int idHook, LowLevelKeyboardProc lpfn, IntPtr hMod, uint dwThreadId);
+
+        [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool UnhookWindowsHookEx(IntPtr hhk);
+
+        [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+        private static extern IntPtr CallNextHookEx(IntPtr hhk, int nCode, IntPtr wParam, IntPtr lParam);
+
+        [DllImport("kernel32.dll", CharSet = CharSet.Auto)]
+        public static extern IntPtr GetModuleHandle(string lpModuleName);
+
+        private delegate IntPtr LowLevelKeyboardProc(int nCode, IntPtr wParam, IntPtr lParam);
+
+        private const int WH_KEYBOARD_LL = 13;
+        private const int WM_KEYDOWN = 0x0100;
+
+        private IntPtr hookID = IntPtr.Zero;
+        private LowLevelKeyboardProc hookCallback;
+
+        private Dictionary<Guna2Button, Keys> keyBindings = new Dictionary<Guna2Button, Keys>(); // Button -> Key
+        private Dictionary<Guna2Button, Guna2ToggleSwitch> toggleMapping = new Dictionary<Guna2Button, Guna2ToggleSwitch>(); // Bind Button -> Toggle Button
+        private Guna2Button waitingForKeyButton = null; // Currently selected button for binding
+
+-----------------------------------------------------------------------------------------------------------
+
+
+
+  
+            hookCallback = HookCallback;
+            hookID = SetHook(hookCallback);
+            Application.ApplicationExit += Application_ApplicationExit;
+
+            // 🔹 Bindings (Simple Guna Button -> Toggle Button)
+            keyBindings[keyname] = Keys.None; // Default No Key
+            toggleMapping[keyname] = togglebutton name; // Jis toggle ko control karna hai
+
+------------------------------------------------------------------------------------------------
+
+
+
+
+        private void Application_ApplicationExit(object sender, EventArgs e)
+        {
+            UnhookWindowsHookEx(hookID);
+        }
+
+        private IntPtr SetHook(LowLevelKeyboardProc proc)
+        {
+            using (Process curProcess = Process.GetCurrentProcess())
+            using (ProcessModule curModule = curProcess.MainModule)
+            {
+                return SetWindowsHookEx(WH_KEYBOARD_LL, proc, GetModuleHandle(curModule.ModuleName), 0);
+            }
+        }
+
+        private IntPtr HookCallback(int nCode, IntPtr wParam, IntPtr lParam)
+        {
+            if (nCode >= 0 && wParam == (IntPtr)WM_KEYDOWN)
+            {
+                int vkCode = Marshal.ReadInt32(lParam);
+                Keys key = (Keys)vkCode;
+
+                if (waitingForKeyButton != null)
+                {
+                    // 🔹 Assign Key to Selected Button
+                    if (key == Keys.Escape)
+                    {
+                        keyBindings[waitingForKeyButton] = Keys.None;
+                        waitingForKeyButton.Text = "None";
+                    }
+                    else
+                    {
+                        keyBindings[waitingForKeyButton] = key;
+                        waitingForKeyButton.Text = key.ToString();
+                    }
+                    waitingForKeyButton = null;
+                }
+                else
+                {
+                    // 🔹 Check which key is pressed and toggle switch
+                    foreach (var kvp in keyBindings)
+                    {
+                        if (kvp.Value == key)
+                        {
+                            Guna2ToggleSwitch toggleSwitch = toggleMapping[kvp.Key];
+                            toggleSwitch.Checked = !toggleSwitch.Checked; // Toggle ON/OFF
+                        }
+                    }
+                }
+            }
+            return CallNextHookEx(hookID, nCode, wParam, lParam);
+        }
+-------------------------------------------------------------------------------------------
+(IN KEY BUTTON)
+
+        private void StartKeyBinding(Guna2Button button)
+        {
+            waitingForKeyButton = button;
+            button.Text = "...";
+        }
