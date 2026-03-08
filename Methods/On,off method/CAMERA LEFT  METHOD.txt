@@ -1,0 +1,120 @@
+DC: https://discord.gg/cwVh4vwcuS
+CREADIT GOES TO INTERNAL X CHEAT !!!
+
+===================================================================================================
+(IN CLASS)
+
+  private static INTERNAL AYUSH = new INTERNAL();
+
+        private long[] scanResults;
+        private string RXC;
+        private bool isReplaced = false;
+
+
+        private void DisableControls()
+        {
+            ToggleSwitch1.Enabled = false;  // CHANGE TO YOUR TOGGLE SWITCH NAME
+          
+        }
+
+        private void EnableControls()
+        {
+            ToggleSwitch1.Enabled = true;  // CHANGE TO YOUR TOGGLE SWITCH NAME
+        }
+
+
+=======================================================================================================
+(IN LOAD BUTTON)
+
+        private async void button1_Click(object sender, EventArgs e) // CAMERA LEFT LOAD BUTTON
+        {
+
+            try
+            {
+                DisableControls();
+                Sta.Text = "Applying...";
+               
+                var proc = System.Diagnostics.Process.GetProcessesByName("HD-Player").FirstOrDefault();
+                if (proc == null)
+                {
+                    EnableControls();
+                    return;
+                }
+
+                AYUSH.OpenProcess(proc.Id);          //SEARCH CODE 
+
+                var enumerable = await AYUSH.AoBScan(0x0000000000010000, 0x00007ffffffeffff,
+                    "00 00 00 00 00 00 80 3f 00 00 00 00 00 00 00 00 00 00 80 bf 00 00 00 00 00 00 80 bf 00 00 00 00 00 00 00 00 00 00 80 3f 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 80 3f 00 00 00 00 00 00 00 00 00 00 80 bf 00 00 80 7f 00 00 80 7f 00 00 80 7f 00 00 80 ff",
+                true, true, string.Empty);
+
+                scanResults = enumerable.ToArray();
+
+                if (scanResults.Length > 0)
+                {
+                    RXC = "0X" + scanResults.FirstOrDefault().ToString("X");
+                    Sta.Text = "LEFT CAMERA LODED";
+                   Console.Beep(2000, 400);
+                }
+                else
+                {
+                    Sta.Text = "No Matches Found.";
+                    Console.Beep(100, 400);
+                }
+            }
+            catch (Exception ex)
+            {
+                Sta.Text = "Error: " + ex.Message;
+            }
+            finally
+            {
+                EnableControls();
+            }
+
+
+
+        }
+
+==============================================================================================================
+
+(IN ON/OFF BUTTON)
+
+        private void ToggleSwitch1_CheckedChanged(object sender, EventArgs e)
+        {
+            if (ToggleSwitch1.Checked) // CHANGE TO YOUR TOGGLE SWITCH NAME
+            {
+                if (scanResults == null || scanResults.Length == 0)
+                {
+                    return;
+                }
+                foreach (long num in scanResults)
+                {
+                    AYUSH.WriteMemory(num.ToString("X"), "bytes",  //REPLACE CODE 
+                        "00 00 00 00 00 00 96 40 00 00 00 00 00 00 00 00 00 00 80 BF 00 00 00 00 00 00 80 BF 00 00 00 00 00 00 00 00 00 00 80 3F 00 00 00 00 00 00 00 00 00 00",
+                        string.Empty, null);
+                }
+
+                isReplaced = false;
+                Sta.Text = "CAMERA LEFT OFF";
+
+            }
+            else
+            {
+                if (scanResults == null || scanResults.Length == 0)
+                {
+                    return;
+                }
+
+                foreach (long num in scanResults)
+                {
+                    AYUSH.WriteMemory(num.ToString("X"), "bytes",   //SEARCH CODE 
+                        "00 00 00 00 00 00 80 3f 00 00 00 00 00 00 00 00 00 00 80 bf 00 00 00 00 00 00 80 bf 00 00 00 00 00 00 00 00 00 00 80 3f 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 80 3f 00 00 00 00 00 00 00 00 00 00 80 bf 00 00 80 7f 00 00 80 7f 00 00 80 7f 00 00 80 ff",
+                    string.Empty, null);
+                }
+
+                isReplaced = false;
+                Sta.Text = "CAMERA LEFT ON";
+
+            }
+        }
+========================================================PLEASE SUBSCRIBE AND GIVE SUPPORT FOR MORE VIDEO==================================================
+
