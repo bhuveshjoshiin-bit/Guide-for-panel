@@ -1,0 +1,64 @@
+<%- include('partials/header') %>
+
+<div class="container mx-auto px-6 py-16 animate-fade-in">
+    <div class="mb-16 text-center py-24 glass rounded-[3rem] relative overflow-hidden">
+        <div class="absolute inset-0 pointer-events-none">
+            <div class="absolute top-0 left-0 w-96 h-96 bg-nord8/5 rounded-full blur-[100px]"></div>
+        </div>
+        <h1 class="text-6xl font-black text-white mb-6 tracking-tighter uppercase">
+            Methods <span class="text-nord8">Library</span>
+        </h1>
+        <p class="text-xl text-nord4/60 max-w-2xl mx-auto font-light leading-relaxed">
+            Performance-optimized code snippets for your C# and C++ game panels.
+        </p>
+    </div>
+
+    <div class="flex flex-col lg:flex-row gap-12">
+        <!-- Sidebar -->
+        <aside class="lg:w-1/4">
+            <div class="glass p-10 rounded-[2.5rem] sticky top-32">
+                <h3 class="text-xs font-black text-white/30 uppercase tracking-[0.3em] mb-10 flex items-center">
+                    <span class="w-8 h-px bg-white/10 mr-4"></span> Filter
+                </h3>
+                <div class="space-y-4">
+                    <a href="/methods" class="block py-4 px-8 rounded-2xl transition-all duration-300 font-bold uppercase tracking-widest text-xs <%= !currentCategory ? 'bg-white text-black shadow-xl shadow-white/10' : 'text-nord4/60 hover:text-white hover:bg-white/5' %>">
+                        All Access
+                    </a>
+                    <% categories.forEach(category => { %>
+                        <a href="/methods?category=<%= category %>" class="block py-4 px-8 rounded-2xl transition-all duration-300 font-bold uppercase tracking-widest text-xs <%= currentCategory === category ? 'bg-white text-black shadow-xl shadow-white/10' : 'text-nord4/60 hover:text-white hover:bg-white/5' %>">
+                            <%= category %>
+                        </a>
+                    <% }) %>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Grid -->
+        <div class="lg:w-3/4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <% methods.forEach(method => { %>
+                    <div class="glass p-10 rounded-[2.5rem] glass-hover transition-all duration-500 flex flex-col h-full group relative overflow-hidden">
+                        <div class="absolute -top-4 -right-4 w-24 h-24 bg-white/5 rounded-full blur-2xl group-hover:bg-nord8/10 transition-colors"></div>
+                        
+                        <div class="flex justify-between items-start mb-8">
+                            <span class="px-4 py-1.5 rounded-full glass border border-white/5 text-[10px] font-black uppercase tracking-widest text-nord8">
+                                <%= method.type === 'csharp' ? 'C#' : 'LOGIC' %>
+                            </span>
+                        </div>
+
+                        <h3 class="text-2xl font-black text-white mb-4 group-hover:text-nord8 transition-colors"><%= method.name %></h3>
+                        <p class="text-nord4/40 text-sm font-light leading-relaxed line-clamp-3 mb-10"><%= method.content.substring(0, 150) %>...</p>
+                        
+                        <div class="mt-auto">
+                            <a href="/methods/<%= method.id %>" class="inline-flex items-center text-white font-black text-[10px] tracking-[0.2em] uppercase hover:translate-x-2 transition-transform">
+                                View Core Logic <span class="ml-3">→</span>
+                            </a>
+                        </div>
+                    </div>
+                <% }) %>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('partials/footer') %>
