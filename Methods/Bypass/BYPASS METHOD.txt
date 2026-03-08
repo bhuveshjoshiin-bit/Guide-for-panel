@@ -1,0 +1,63 @@
+if (Process.GetProcessesByName("HD-Player").Length == 0)
+{
+    // Emulator not found Status
+    Console.Beep(240, 300);
+    notificationLabel.Text = "Emulator not found";
+}
+else
+{
+    // Waiting Status
+    notificationLabel.Text = "Injecting...";
+
+    // First scan and replace values
+    string search1 = "01 00 a0 e3 1c 00 86 e5 00 70 94 e5 c0 60 95 e5";
+    string replace1 = "01 00 f0 e3 1c 00 86 e5 00 70 94 e5 c0 60 95 e5";
+
+    // Second scan and replace values
+    string search2 = "54 01 87 e5 00 70 94 e5 01 10 9f e7 00 00 91 e5";
+    string replace2 = "58 01 87 e5 00 70 94 e5 01 10 9f e7 00 00 91 e5";
+
+    bool success1 = false;
+    bool success2 = false;
+
+    memory.OpenProcess("HD-Player");
+
+    // First scan and replace
+    IEnumerable<long> results1 = await memory.AoBScan(search1, writable: true, true);
+    if (results1.Any())
+    {
+        for (int i = 0; i < results1.Count(); i++)
+        {
+            memory.WriteMemory(results1.ElementAt(i).ToString("X"), "bytes", replace1);
+        }
+        success1 = true;
+    }
+
+    // Second scan and replace
+    IEnumerable<long> results2 = await memory.AoBScan(search2, writable: true, true);
+    if (results2.Any())
+    {
+        for (int i = 0; i < results2.Count(); i++)
+        {
+            memory.WriteMemory(results2.ElementAt(i).ToString("X"), "bytes", replace2);
+        }
+        success2 = true;
+    }
+
+    // Check results
+    if (success1 && success2)
+    {
+        Console.Beep(400, 300);
+        notificationLabel.Text = "Both injections successful";
+    }
+    else if (success1 || success2)
+    {
+        Console.Beep(350, 300);
+        notificationLabel.Text = $"Partial success - First: {success1}, Second: {success2}";
+    }
+    else
+    {
+        Console.Beep(240, 300);
+        notificationLabel.Text = "Both injections failed";
+    }
+}
