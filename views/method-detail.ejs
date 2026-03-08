@@ -1,0 +1,126 @@
+<%- include('partials/header') %>
+
+<div class="container mx-auto px-6 py-16 animate-fade-in max-w-6xl">
+    <div class="mb-10">
+        <a href="/methods" class="inline-flex items-center text-white/30 hover:text-white font-black text-xs tracking-[0.3em] uppercase transition-all duration-300 group mb-12">
+            <span class="mr-4 group-hover:-translate-x-2 transition-transform">←</span> Return to Library
+        </a>
+        
+        <div class="glass p-12 md:p-20 rounded-[3rem] relative overflow-hidden mb-12">
+            <div class="absolute inset-0 pointer-events-none">
+                <div class="absolute top-0 right-0 w-96 h-96 bg-nord8/5 rounded-full blur-[100px]"></div>
+            </div>
+
+            <div class="flex flex-col md:flex-row justify-between items-start mb-16 gap-8">
+                <div>
+                    <span class="inline-block px-6 py-2 rounded-full glass border border-white/5 text-[10px] font-black uppercase tracking-[0.3em] mb-8 text-nord8">
+                        <%= method.type === 'csharp' ? 'C# MODULE' : 'LOGIC FLOW' %>
+                    </span>
+                    <h1 class="text-5xl md:text-6xl font-black text-white mb-6 tracking-tighter uppercase"><%= method.name %></h1>
+                    <p class="text-xl text-nord4/60 font-light flex items-center">
+                        <span class="w-8 h-px bg-white/10 mr-4"></span> <%= method.category %>
+                    </p>
+                </div>
+                <button onclick="copyToClipboard()" class="bg-white hover:bg-nord8 text-black font-black py-5 px-12 rounded-2xl transition-all duration-300 transform hover:scale-105 active:scale-95 uppercase tracking-widest text-xs flex items-center shadow-2xl shadow-white/5">
+                    <span id="copyIcon" class="mr-3">📋</span> <span id="copyText">COPY CODE</span>
+                </button>
+            </div>
+
+            <!-- Documentation Section -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
+                <!-- Requirements -->
+                <div class="space-y-8">
+                    <h3 class="text-xs font-black text-white/30 uppercase tracking-[0.4em] flex items-center">
+                        <span class="w-8 h-px bg-white/10 mr-4"></span> UI Requirements
+                    </h3>
+                    <div class="space-y-4">
+                        <% if (method.documentation.requirements && method.documentation.requirements.length > 0) { %>
+                            <% method.documentation.requirements.forEach(req => { %>
+                                <div class="glass p-6 rounded-2xl flex items-center justify-between group hover:bg-white/5 transition-all">
+                                    <div>
+                                        <div class="text-[10px] font-black text-nord8 uppercase mb-1 tracking-widest"><%= req.element %></div>
+                                        <div class="text-white font-bold tracking-wide"><%= req.name %></div>
+                                    </div>
+                                    <div class="text-right">
+                                        <div class="text-[10px] font-black text-white/20 uppercase mb-1 tracking-widest">Role</div>
+                                        <div class="text-nord4/60 text-xs font-light"><%= req.role %></div>
+                                    </div>
+                                </div>
+                            <% }) %>
+                        <% } else { %>
+                            <p class="text-nord4/40 text-sm font-light italic">Standard UI elements apply.</p>
+                        <% } %>
+                    </div>
+                </div>
+
+                <!-- Setup & Flow -->
+                <div class="space-y-12">
+                    <div>
+                        <h3 class="text-xs font-black text-white/30 uppercase tracking-[0.4em] mb-6 flex items-center">
+                            <span class="w-8 h-px bg-white/10 mr-4"></span> Implementation Flow
+                        </h3>
+                        <p class="text-nord4/60 text-sm font-light leading-relaxed glass p-8 rounded-3xl">
+                            <%= method.documentation.logic_flow %>
+                        </p>
+                    </div>
+                    
+                    <div>
+                        <h3 class="text-xs font-black text-white/30 uppercase tracking-[0.4em] mb-6 flex items-center">
+                            <span class="w-8 h-px bg-white/10 mr-4"></span> Project Setup
+                        </h3>
+                        <p class="text-nord4/60 text-sm font-light leading-relaxed glass p-8 rounded-3xl">
+                            <%= method.documentation.setup %>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reference Files -->
+            <% if (method.documentation.references && method.documentation.references.length > 0) { %>
+                <div class="mb-16">
+                    <h3 class="text-xs font-black text-white/30 uppercase tracking-[0.4em] mb-8 flex items-center">
+                        <span class="w-8 h-px bg-white/10 mr-4"></span> Logic Dependencies
+                    </h3>
+                    <div class="flex flex-wrap gap-4">
+                        <% method.documentation.references.forEach(ref => { %>
+                            <a href="/download/<%= method.category %>/<%= ref %>" class="px-8 py-4 glass rounded-xl text-[10px] font-black text-nord8 uppercase tracking-[0.2em] hover:bg-white hover:text-black transition-all duration-300 flex items-center group">
+                                <span class="mr-3 group-hover:animate-bounce">⬇️</span> Download <%= ref %>
+                            </a>
+                        <% }) %>
+                    </div>
+                </div>
+            <% } %>
+
+            <!-- Code Block -->
+            <div class="relative group mt-16">
+                <div class="absolute -inset-px bg-gradient-to-r from-white/10 to-white/5 rounded-3xl"></div>
+                <div class="relative bg-black/40 backdrop-blur-xl p-10 md:p-16 rounded-3xl border border-white/5 overflow-hidden">
+                    <pre class="overflow-x-auto text-sm md:text-base leading-relaxed text-nord4/80 font-mono scrollbar-thin" id="methodContent"><code class="<%= method.type === 'csharp' ? 'language-csharp' : '' %>"><%= method.content %></code></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function copyToClipboard() {
+        const content = document.getElementById('methodContent').innerText;
+        navigator.clipboard.writeText(content).then(() => {
+            const icon = document.getElementById('copyIcon');
+            const text = document.getElementById('copyText');
+            const btn = event.currentTarget;
+            
+            icon.innerText = '✅';
+            text.innerText = 'COPIED';
+            btn.classList.replace('bg-white', 'bg-nord14');
+            
+            setTimeout(() => {
+                icon.innerText = '📋';
+                text.innerText = 'COPY CODE';
+                btn.classList.replace('bg-nord14', 'bg-white');
+            }, 2000);
+        });
+    }
+</script>
+
+<%- include('partials/footer') %>
