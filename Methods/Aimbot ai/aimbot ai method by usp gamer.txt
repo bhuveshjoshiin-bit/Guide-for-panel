@@ -1,0 +1,104 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Windows.Forms;
+using USPGAMER_RAKU_MEM;
+
+namespace AIMBOT
+{
+    public partial class Form1 : Form
+    {
+        USPGamerMemory memory = new USPGamerMemory();
+
+        string AimbotScan = "FF FF FF FF 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 FF FF FF FF FF FF FF FF 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? 00 00 00 00 00 00 00 00 00 00 00 00 A5 43";
+       string headoffset = "";
+       string chestoffset = "";
+        Dictionary<long, int> OrginalValues1 = new Dictionary<long, int>();
+        Dictionary<long, int> OrginalValues2 = new Dictionary<long, int>();
+        Dictionary<long, int> OrginalValues3 = new Dictionary<long, int>();
+        Dictionary<long, int> OrginalValues4 = new Dictionary<long, int>();
+
+        bool isAimbotOn = false;
+        Thread aimThread;
+        List<long> baseResults = new List<long>();
+
+        public Form1()
+        {
+            InitializeComponent();
+        }
+
+        private async void button1_Click(object sender, EventArgs e)
+        { 
+
+            lblStatus.Text = "Wait To Inject Aimbot...";
+
+            long readOffset = Convert.ToInt64(headoffset, 16);
+            long writeOffset = Convert.ToInt64(chestoffset, 16);
+
+            // 🔗 usp gamer yt
+            if (!memory.SetProcess("HD-Player"))
+            {
+                lblStatus.Text = "Emulator Not Found";
+                return;
+            }
+            var result = await memory.AoBScan(AimbotScan);
+            if (!result.Any())
+            {
+                lblStatus.Text = "Pattern Not Found";
+                return;
+            }
+
+            baseResults.AddRange(result);
+            isAimbotOn = true;
+            aimThread = new Thread(() =>
+            {
+                while (isAimbotOn)
+                {
+                    foreach (long baseAddr in baseResults)
+                    {
+                        long headAddr = baseAddr + readOffset;
+                        long chestAddr = baseAddr - writeOffset; 
+
+                        byte[] headBytes = memory.ReadBytes(headAddr, 4);
+                        byte[] chestBytes = memory.ReadBytes(chestAddr, 4);
+                        if (headBytes == null || chestBytes == null) continue;
+                        int headVal = BitConverter.ToInt32(headBytes, 0);
+                        int chestVal = BitConverter.ToInt32(chestBytes, 0);
+                        if (headVal == 0) continue;
+                        if (!OrginalValues1.ContainsKey(chestAddr))
+                            OrginalValues1[chestAddr] = chestVal;
+                        if (!OrginalValues2.ContainsKey(headAddr))
+                            OrginalValues2[headAddr] = headVal;
+                        for (int i = 0; i < 10; i++)
+                            memory.WriteBytes(chestAddr, BitConverter.GetBytes(headVal));
+                        OrginalValues3[chestAddr] = headVal;
+                        OrginalValues4[headAddr] = headVal;
+                    }
+
+                    Thread.Sleep(5);
+                }
+            });
+
+            aimThread.IsBackground = true;
+            aimThread.Start();
+
+            lblStatus.Text = "Aimbot Inject Success";
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            isAimbotOn = false;
+            lblStatus.Text = "Aimbot OFF";
+        }
+    
+
+
+
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+
+        }
+    } 
+}
