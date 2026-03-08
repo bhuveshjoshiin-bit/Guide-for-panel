@@ -1,0 +1,87 @@
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Windows.Forms;
+
+namespace DustDriftAnimation
+{
+    public partial class Form1 : Form
+    {
+        private List<DustParticle> particles = new List<DustParticle>();
+        private Timer timer = new Timer();                                //https://discord.gg/wQjFQ57Jfn        
+
+        public Form1()
+        {
+            InitializeComponent();
+            this.DoubleBuffered = true;
+            this.BackColor = Color.Black; // dark background
+
+            // Create dust particles //https://discord.gg/wQjFQ57Jfn  
+            for (int i = 0; i < 150; i++)
+            {
+                particles.Add(new DustParticle(this.ClientSize.Width, this.ClientSize.Height));
+            }
+
+            // Setup timer
+            timer.Interval = 40; // slower for subtle drift
+            timer.Tick += Timer_Tick;
+            timer.Start();
+        }
+
+        private void Timer_Tick(object sender, EventArgs e)
+        {
+            foreach (var p in particles)
+            {
+                p.Move(this.ClientSize.Width, this.ClientSize.Height); //https://discord.gg/wQjFQ57Jfn  
+            }
+            this.Invalidate();
+        } //https://discord.gg/wQjFQ57Jfn  
+
+        protected override void OnPaint(PaintEventArgs e)
+        {
+            base.OnPaint(e);
+
+            foreach (var p in particles)
+            {
+                using (Brush b = new SolidBrush(Color.FromArgb(p.Alpha, Color.Gray)))
+                {
+                    e.Graphics.FillEllipse(b, p.X, p.Y, p.Size, p.Size);
+                }
+            }
+        }
+    }
+
+    public class DustParticle
+    {
+        public float X { get; set; }
+        public float Y { get; set; }
+        public int Size { get; set; } //https://discord.gg/wQjFQ57Jfn  
+        public int Alpha { get; set; }
+        private float driftX;
+        private float driftY;
+ //https://discord.gg/wQjFQ57Jfn  
+        private static Random rand = new Random();
+
+        public DustParticle(int formWidth, int formHeight)
+        {
+            X = rand.Next(0, formWidth);
+            Y = rand.Next(0, formHeight);
+            Size = rand.Next(2, 5);
+            Alpha = rand.Next(50, 150); // semi-transparent
+            driftX = (float)(rand.NextDouble() * 0.5 - 0.25); // subtle horizontal drift
+            driftY = (float)(rand.NextDouble() * 0.5 - 0.25); // subtle vertical drift
+        }
+
+        public void Move(int formWidth, int formHeight) //https://discord.gg/wQjFQ57Jfn  
+        {
+            X += driftX;
+            Y += driftY;
+
+            // Wrap around edges for continuous drift
+            if (X < 0) X = formWidth; //https://discord.gg/wQjFQ57Jfn  
+            if (X > formWidth) X = 0;
+            if (Y < 0) Y = formHeight;
+            if (Y > formHeight) Y = 0;
+        }
+    }
+
