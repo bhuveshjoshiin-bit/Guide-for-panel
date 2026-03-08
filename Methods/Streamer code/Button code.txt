@@ -1,0 +1,11 @@
+ if (streamerbtn.Checked)
+{
+    base.ShowInTaskbar = false;
+    Main.Streaming = true;
+    Main.SetWindowDisplayAffinity(base.Handle, 17U);
+}
+else
+{
+    base.ShowInTaskbar = true;
+    Main.Streaming = false;
+    Main.SetWindowDisplayAffinity(base.Handle, 0U);
