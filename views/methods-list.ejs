@@ -1,0 +1,32 @@
+<%- include('partials/header') %>
+
+<div class="container mx-auto px-6 py-16 animate-fade-in">
+    <div class="mb-16 text-center py-24 glass rounded-[3rem] relative overflow-hidden">
+        <div class="absolute inset-0 pointer-events-none">
+            <div class="absolute top-0 left-0 w-96 h-96 bg-nord8/5 rounded-full blur-[100px]"></div>
+        </div>
+        <h1 class="text-6xl font-black text-white mb-6 tracking-tighter uppercase">
+            Methods <span class="text-nord8">Library</span>
+        </h1>
+        <p class="text-xl text-nord4/60 max-w-2xl mx-auto font-light leading-relaxed">
+            Specific guides and performance-optimized logic for your game panels.
+        </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <% methods.forEach(method => { %>
+            <a href="/methods/<%= method.slug %>" class="glass p-10 rounded-[2.5rem] glass-hover transition-all duration-500 group relative overflow-hidden h-full flex flex-col">
+                <div class="text-4xl mb-8 group-hover:scale-110 transition-transform"><%= method.icon %></div>
+                <h3 class="text-2xl font-black text-white mb-4 group-hover:text-nord8 transition-colors uppercase tracking-tight"><%= method.title %></h3>
+                <p class="text-nord4/40 text-sm font-light leading-relaxed mb-10"><%= method.desc %></p>
+                <div class="mt-auto">
+                    <span class="inline-flex items-center text-white font-black text-[10px] tracking-[0.2em] uppercase">
+                        View Details <span class="ml-3 group-hover:translate-x-2 transition-transform">→</span>
+                    </span>
+                </div>
+            </a>
+        <% }) %>
+    </div>
+</div>
+
+<%- include('partials/footer') %>
