@@ -1,0 +1,52 @@
+
+```
+
+public static api KeyAuthApp = new api(
+name: "",
+ownerid: "",
+version: "1.0"
+
+);
+        public Form1()
+        {
+            InitializeComponent();
+
+
+            try
+            {
+                KeyAuthApp.init(); // MUST run before ANY login
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Init Failed");
+                Environment.Exit(0);
+            }
+
+        }
+
+
+
+(IN LOGIN BUTTON)
+
+
+            if (string.IsNullOrWhiteSpace(User.Text) || string.IsNullOrWhiteSpace(Pass.Text))
+            {
+                MessageBox.Show("Username or Password empty");
+                return;
+            }
+
+            KeyAuthApp.login(User.Text, Pass.Text);
+
+            if (KeyAuthApp.response.success)
+            {
+
+                Form1 f2 = new Form2();
+                f2.Show();
+                this.Hide();
+            }
+            else
+            {
+
+            }
+
+        }```
