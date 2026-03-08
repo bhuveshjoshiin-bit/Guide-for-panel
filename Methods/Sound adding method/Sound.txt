@@ -1,0 +1,29 @@
+(IN CLASS)
+
+        private void PlaySound(string soundFileName)
+        {
+            // Load the sound from embedded resources
+            var assembly = Assembly.GetExecutingAssembly();
+            // Ensure the soundFileName matches the resource's full name
+            var resourceName = $"YOUR PROJECT NAME.SOUND.{soundFileName}";
+
+            using (Stream soundStream = assembly.GetManifestResourceStream(resourceName))
+
+            {
+                if (soundStream != null)
+                {
+                    SoundPlayer player = new SoundPlayer(soundStream);
+                    player.Play();
+                }
+                else
+                {
+                    MessageBox.Show($"SOUND'{soundFileName}' not found.");
+                }
+            }
+        }
+------------------------------------------------------------------------------        
+(IN BUTTON)
+
+
+// Play the embedded sound
+PlaySound("SOUNDNAME.WAV");  
