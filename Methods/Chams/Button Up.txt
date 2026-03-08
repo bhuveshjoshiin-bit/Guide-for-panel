@@ -1,0 +1,48 @@
+[DllImport("kernel32.dll", SetLastError = true)]
+static extern IntPtr OpenProcess(uint processAccess, bool bInheritHandle, int processId);
+
+[DllImport("kernel32.dll", SetLastError = true)]
+static extern IntPtr GetProcAddress(IntPtr hModule, string lpProcName);
+
+[DllImport("kernel32.dll", SetLastError = true)]
+static extern IntPtr GetModuleHandle(string lpModuleName);
+
+[DllImport("kernel32.dll", SetLastError = true)]
+static extern IntPtr VirtualAllocEx(IntPtr hProcess, IntPtr lpAddress, IntPtr dwSize, uint flAllocationType, uint flProtect);
+
+[DllImport("kernel32.dll", SetLastError = true)]
+static extern bool WriteProcessMemory(IntPtr hProcess, IntPtr lpBaseAddress, byte[] lpBuffer, uint nSize, out IntPtr lpNumberOfBytesWritten);
+
+[DllImport("kernel32.dll")]
+static extern IntPtr CreateRemoteThread(IntPtr hProcess, IntPtr lpThreadAttribute, IntPtr dwStackSize, IntPtr lpStartAddress, IntPtr lpParameter, uint dwCreationFlags, IntPtr lpThreadId);
+
+const uint PROCESS_CREATE_THREAD = 0x2;
+const uint PROCESS_QUERY_INFORMATION = 0x400;
+const uint PROCESS_VM_OPERATION = 0x8;
+const uint PROCESS_VM_WRITE = 0x20;
+const uint PROCESS_VM_READ = 0x10;
+
+const uint MEM_COMMIT = 0x1000;
+const uint PAGE_READWRITE = 4;
+
+private static void ExtractEmbeddedResource(string resourceName, string outputPath)
+{
+    Assembly executingAssembly = Assembly.GetExecutingAssembly();
+
+    // Get the embedded resource stream
+    using (Stream resourceStream = executingAssembly.GetManifestResourceStream(resourceName))
+    {
+        if (resourceStream == null)
+        {
+            throw new ArgumentException($"Resource '{resourceName}' not found.");
+        }
+
+        // Read the embedded resource and save it to the specified path
+        using (FileStream fileStream = new FileStream(outputPath, FileMode.Create))
+        {
+            byte[] buffer = new byte[resourceStream.Length];
+            resourceStream.Read(buffer, 0, buffer.Length);
+            fileStream.Write(buffer, 0, buffer.Length);
+        }
+    }
+}
